@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقييم رضا أصحاب المصلحة | جمعية رفاق</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1a3a5c;--primary-mid:#1e5288;--primary-light:#2979c4;
+  --accent:#d4a017;--accent-light:#fef3dc;
+  --success:#15803d;--success-bg:#dcfce7;
+  --warn:#b45309;--warn-bg:#fef3dc;
+  --danger:#c81e1e;--danger-bg:#fee2e2;
+  --info:#1d4ed8;--info-bg:#dbeafe;
+  --bg:#f0f4f8;--surface:#fff;--border:#dde4ed;
+  --text:#1e2d3e;--muted:#5a7090;--light:#94afc8;
+  --shadow:0 2px 10px rgba(26,58,92,.1);--shadow-lg:0 8px 28px rgba(26,58,92,.15);
+  --r:12px;--rs:7px;--rl:18px;
+}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+
+/* ── VIEWS ── */
+.view{display:none;min-height:100vh}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.view.active{animation:fadeIn .2s ease}
+
+/* ── LANDING ── */
+.landing{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.landing-card{background:var(--surface);border-radius:var(--rl);box-shadow:var(--shadow-lg);padding:48px 40px;max-width:440px;width:100%;text-align:center}
+.landing-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--primary),var(--primary-mid));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.landing-card h1{font-size:22px;font-weight:800;color:var(--primary);margin-bottom:6px}
+.landing-card p{font-size:13px;color:var(--muted);margin-bottom:32px}
+.landing-btns{display:flex;flex-direction:column;gap:12px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:var(--rs);font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-mid)}
+.btn-accent{background:var(--accent);color:#1a1a1a}.btn-accent:hover{filter:brightness(.9)}
+.btn-outline{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}.btn-outline:hover{background:var(--primary);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}.btn-ghost:hover{background:var(--bg)}
+.btn-success{background:var(--success);color:#fff}.btn-success:hover{filter:brightness(.9)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-full{width:100%}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.topbar-title{font-size:17px;font-weight:800;color:var(--primary)}
+.topbar-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+/* ── LAYOUT ── */
+.page-wrap{max-width:900px;margin:0 auto;padding:28px 24px}
+.page-wrap-wide{max-width:1100px;margin:0 auto;padding:28px 24px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:0 1px 4px rgba(26,58,92,.06);overflow:hidden}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(240,244,248,.5)}
+.card-title{font-size:15px;font-weight:700}
+.card-body{padding:20px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat{background:var(--surface);border-radius:var(--r);padding:20px;border:1px solid var(--border);position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%;background:var(--c,var(--primary));border-radius:0 var(--r) var(--r) 0}
+.stat-n{font-size:30px;font-weight:800;color:var(--c,var(--primary));line-height:1}
+.stat-l{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ── ADMIN SIDEBAR LAYOUT ── */
+.admin-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;background:linear-gradient(170deg,#1a3a5c,#0f2640);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;right:0;height:100vh;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#1a1a1a;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.sidebar-logo h2{font-size:15px;font-weight:700;line-height:1.4}
+.sidebar-logo p{font-size:11px;opacity:.5;margin-top:3px}
+.sidebar-nav{flex:1;padding:12px 0}
+.nav-sec{font-size:10px;font-weight:700;letter-spacing:.12em;opacity:.35;padding:14px 20px 5px;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:13px;opacity:.7;border:none;background:none;color:#fff;width:100%;text-align:right;transition:all .15s;font-family:'Tajawal',sans-serif;position:relative}
+.nav-btn:hover{opacity:1;background:rgba(255,255,255,.07)}
+.nav-btn.active{opacity:1;background:rgba(255,255,255,.13);font-weight:600}
+.nav-btn.active::before{content:'';position:absolute;right:0;top:0;width:3px;height:100%;background:var(--accent)}
+.sidebar-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.07);font-size:11px;opacity:.35;text-align:center}
+.admin-main{margin-right:260px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.admin-content{padding:28px}
+
+/* ── PROJECT CARDS ── */
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.proj-card{background:var(--surface);border-radius:var(--r);border:1.5px solid var(--border);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.proj-card::before{content:'';position:absolute;top:0;right:0;width:5px;height:100%;background:var(--dc,var(--primary))}
+.proj-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);border-color:var(--primary-light)}
+.proj-card h3{font-size:13px;font-weight:700;margin-bottom:10px;line-height:1.4;padding-right:8px}
+.dept-badge{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600;margin-bottom:8px;display:inline-block}
+.prog-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s}
+.proj-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+.chip-done{background:var(--success-bg);color:var(--success)}
+.chip-part{background:var(--info-bg);color:var(--info)}
+.chip-pend{background:var(--warn-bg);color:var(--warn)}
+
+/* ── SURVEY ── */
+.survey-wrap{max-width:700px;margin:0 auto;padding:24px}
+.s-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--bg);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;font-size:13px}
+.meta-l{font-size:11px;color:var(--light);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.meta-v{color:var(--text);font-weight:500}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--muted);font-family:'Tajawal',sans-serif;font-weight:500;transition:all .15s}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tab.done{background:var(--success-bg);color:var(--success);border-color:var(--success)}
+.q-block{margin-bottom:22px}
+.q-label{font-size:14px;font-weight:700;color:var(--text);margin-bottom:13px;line-height:1.5;display:flex;align-items:flex-start;gap:8px}
+.q-n{min-width:24px;height:24px;background:var(--primary);color:#fff;border-radius:50%;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.rating-row{display:flex;gap:7px}
+.rb{flex:1;padding:10px 3px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-align:center;transition:all .15s;line-height:1.4}
+.rb:hover{border-color:var(--primary);color:var(--primary);background:#fff}
+.rb.s1{background:#fee2e2;border-color:#dc2626;color:#dc2626}
+.rb.s2{background:#ffedd5;border-color:#ea580c;color:#ea580c}
+.rb.s3{background:#fef9c3;border-color:#ca8a04;color:#ca8a04}
+.rb.s4{background:var(--success-bg);border-color:var(--success);color:var(--success)}
+.rb.s5{background:var(--info-bg);border-color:var(--info);color:var(--info)}
+.scale-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--light);margin-top:4px}
+.notes-area{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Tajawal',sans-serif;font-size:14px;color:var(--text);background:var(--surface);resize:vertical;min-height:75px;outline:none;transition:border-color .15s}
+.notes-area:focus{border-color:var(--primary-light)}
+.sv-prog-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:22px;overflow:hidden}
+.sv-prog-fill{height:100%;background:var(--primary-light);border-radius:2px;transition:width .3s}
+.sv-footer{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border);margin-top:8px}
+
+/* ── RESULTS TABLE ── */
+.rtable{width:100%;border-collapse:collapse;font-size:13px}
+.rtable th{background:var(--bg);padding:10px 13px;text-align:right;font-weight:700;color:var(--muted);font-size:12px;border-bottom:2px solid var(--border)}
+.rtable td{padding:12px 13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.rtable tr:last-child td{border-bottom:none}
+.rtable tr:hover td{background:rgba(240,244,248,.5)}
+.sc{display:inline-flex;padding:3px 10px;border-radius:20px;font-weight:700;font-size:12px}
+.sc-h{background:var(--success-bg);color:var(--success)}
+.sc-m{background:#fef9c3;color:#854d0e}
+.sc-l{background:var(--danger-bg);color:var(--danger)}
+
+/* ── Q EDITOR ── */
+.q-editor-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.q-editor-row .qn{min-width:26px;height:26px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;margin-top:7px}
+.q-editor-row textarea{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Tajawal',sans-serif;font-size:13px;color:var(--text);background:var(--surface);resize:vertical;min-height:50px;outline:none;line-height:1.5;transition:border-color .15s}
+.q-editor-row textarea:focus{border-color:var(--primary-light)}
+.rst-btn{min-width:28px;height:28px;border:1.5px solid var(--border);background:var(--bg);border-radius:var(--rs);cursor:pointer;color:var(--muted);font-size:15px;margin-top:7px;flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.rst-btn:hover{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty svg{width:64px;height:64px;margin-bottom:16px;opacity:.2}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--primary);color:#fff;padding:12px 24px;border-radius:var(--r);font-size:14px;font-weight:600;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow-lg);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-inp,.fsel{padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Tajawal',sans-serif;font-size:14px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s}
+.search-inp{flex:1;min-width:180px}
+.search-inp:focus,.fsel:focus{border-color:var(--primary-light)}
+.info-bar{background:var(--accent-light);border:1px solid #e8c44a;border-radius:var(--r);padding:12px 16px;font-size:13px;color:#7a5200;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px}
+.done-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.done-card{background:var(--surface);border-radius:var(--rl);box-shadow:var(--shadow-lg);padding:48px 40px;max-width:400px;width:100%;text-align:center}
+.done-icon{font-size:56px;margin-bottom:16px}
+.bar-item{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.bar-lbl{width:140px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.bar-val{width:38px;font-weight:700;font-size:12px;color:var(--text)}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.section-title{font-size:16px;font-weight:700}
+.section-count{font-size:12px;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:20px;border:1px solid var(--border)}
+.report-hero{background:linear-gradient(135deg,var(--primary),var(--primary-mid));color:#fff;border-radius:var(--r);padding:26px 30px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center}
+/* dept colors */
+.dc0{--dc:#1a3a5c}.dc1{--dc:#6d28d9}.dc2{--dc:#0891b2}.dc3{--dc:#059669}.dc4{--dc:#c2410c}
+.db0{background:#dbeafe;color:#1e40af}.db1{background:#ede9fe;color:#5b21b6}.db2{background:#cffafe;color:#0e7490}.db3{background:#d1fae5;color:#065f46}.db4{background:#ffedd5;color:#9a3412}
+
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .proj-grid{grid-template-columns:repeat(2,1fr)}
+  .sidebar{width:220px}.admin-main{margin-right:220px}
+  .admin-content{padding:20px}
+}
+@media(max-width:600px){
+  .proj-grid{grid-template-columns:1fr}
+  .sidebar{transform:translateX(100%);transition:transform .3s}
+  .sidebar.open{transform:none}
+  .admin-main{margin-right:0}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .rating-row{flex-wrap:wrap}
+  .rb{min-width:calc(33% - 5px)}
+}
+@media print{
+  .sidebar,.topbar,.btn{display:none!important}
+  .admin-main{margin-right:0!important}
+  #ap-dashboard,.admin-page{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ LANDING ═══════════════════════════════ -->
+<div class="view active" id="v-landing">
+  <div class="landing">
+    <div class="landing-card">
+      <div class="landing-logo">🏆</div>
+      <h1>تقييم رضا أصحاب المصلحة</h1>
+      <p>جمعية رفاق الخيرية لرعاية الأيتام · حائل<br>النصف الأول 2026</p>
+      <div class="landing-btns">
+        <button class="btn btn-primary btn-full" onclick="goSurvey()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          بدء التقييم
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="goAdmin()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          دخول الإدارة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ADMIN LOGIN ═══════════════════════════ -->
+<div class="view" id="v-login">
+  <div class="landing">
+    <div class="landing-card">
+      <div class="landing-logo" style="background:linear-gradient(135deg,#d4a017,#b8860b)">🔐</div>
+      <h1 style="font-size:19px">دخول الإدارة</h1>
+      <p style="margin-bottom:24px">أدخل كلمة المرور للوصول للوحة التحكم</p>
+      <input type="password" id="pw-inp" placeholder="كلمة المرور" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:'Tajawal',sans-serif;background:var(--surface);color:var(--text);outline:none;margin-bottom:10px" onkeydown="if(event.key==='Enter')checkPW()">
+      <div id="pw-err" style="font-size:13px;color:var(--danger);margin-bottom:10px;display:none">⚠ كلمة المرور غير صحيحة</div>
+      <button class="btn btn-primary btn-full" onclick="checkPW()" style="margin-bottom:10px">دخول</button>
+      <button class="btn btn-ghost btn-full" onclick="show('v-landing')">رجوع</button>
+      <p style="font-size:11px;color:var(--muted);margin-top:16px">كلمة المرور الافتراضية: <strong>rafaq2026</strong><br>غيّرها من إعدادات النظام بعد الرفع</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ ADMIN ══════════════════════════════════ -->
+<div class="view" id="v-admin">
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-badge">🏆 رفاق</div>
+        <h2>نظام تقييم رضا<br>أصحاب المصلحة</h2>
+        <p>جمعية رفاق الخيرية · حائل</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-sec">القائمة</div>
+        <button class="nav-btn active" onclick="adminPage('dashboard',this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          لوحة التحكم
+        </button>
+        <button class="nav-btn" onclick="adminPage('projects',this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h20M2 12h20M2 17h20"/></svg>
+          المشاريع
+        </button>
+        <button class="nav-btn" onclick="adminPage('results',this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          نتائج التقييم
+        </button>
+        <button class="nav-btn" onclick="adminPage('report',this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          التقرير التحليلي
+        </button>
+        <div class="nav-sec" style="margin-top:6px">الإعدادات</div>
+        <button class="nav-btn" onclick="adminPage('questions',this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          إدارة الأسئلة
+        </button>
+      </nav>
+      <div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,.07)">
+        <button class="btn btn-ghost btn-sm btn-full" onclick="adminLogout()" style="color:#fff;border-color:rgba(255,255,255,.2)">تسجيل الخروج</button>
+      </div>
+      <div class="sidebar-footer">النصف الأول 2026 | الإصدار 2.1</div>
+    </aside>
+    <main class="admin-main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="admin-page-title">لوحة التحكم</div>
+          <div class="topbar-sub">نظام تقييم رضا أصحاب المصلحة على المشاريع</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            تصدير CSV
+          </button>
+        </div>
+      </div>
+      <div class="admin-content">
+
+        <!-- DASHBOARD -->
+        <div class="admin-page active" id="ap-dashboard">
+          <div class="stats-grid">
+            <div class="stat" style="--c:var(--primary)"><div class="stat-n" id="st-total">0</div><div class="stat-l">إجمالي المشاريع</div></div>
+            <div class="stat" style="--c:var(--success)"><div class="stat-n" id="st-done">0</div><div class="stat-l">تقييمات مكتملة</div></div>
+            <div class="stat" style="--c:var(--accent)"><div class="stat-n" id="st-avg">—</div><div class="stat-l">متوسط الرضا / 5</div></div>
+            <div class="stat" style="--c:var(--primary-light)"><div class="stat-n" id="st-pct">0%</div><div class="stat-l">نسبة الإنجاز</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+            <div class="card"><div class="card-header"><span class="card-title">المشاريع حسب الإدارة</span></div><div class="card-body" id="d-dept-chart"></div></div>
+            <div class="card"><div class="card-header"><span class="card-title">الرضا حسب الإدارة</span></div><div class="card-body" id="d-score-chart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">أعلى المشاريع رضاءً</span><button class="btn btn-primary btn-sm" onclick="adminPage('projects',document.querySelectorAll('.nav-btn')[1])">عرض الكل</button></div>
+            <div class="card-body" id="d-top"></div>
+          </div>
+          <div class="card" style="margin-top:16px">
+            <div class="card-header"><span class="card-title">📎 رابط التقييم للمشاركة</span></div>
+            <div class="card-body">
+              <div id="share-link-box" onclick="copyLink()" style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 14px;font-size:13px;color:var(--muted);cursor:pointer;word-break:break-all;transition:border-color .15s" onmouseover="this.style.borderColor='var(--primary-light)'" onmouseout="this.style.borderColor='var(--border)'">انقر لنسخ الرابط</div>
+              <p style="font-size:11px;color:var(--muted);margin-top:7px">أرسل هذا الرابط لمدراء المشاريع — يوزعونه على أصحاب المصلحة مباشرة</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="admin-page" id="ap-projects" style="display:none">
+          <div class="section-hdr">
+            <div class="section-title">المشاريع</div>
+            <span class="section-count" id="ap-proj-count">0 مشروع</span>
+          </div>
+          <div class="filter-bar">
+            <input class="search-inp" placeholder="🔍 ابحث عن مشروع..." id="ap-search" oninput="renderAdminProjects()">
+            <select class="fsel" id="ap-dept-f" onchange="renderAdminProjects()"><option value="">كل الإدارات</option></select>
+            <select class="fsel" id="ap-status-f" onchange="renderAdminProjects()">
+              <option value="">كل الحالات</option>
+              <option value="pending">لم يبدأ</option>
+              <option value="partial">جزئي</option>
+              <option value="done">مكتمل</option>
+            </select>
+          </div>
+          <div class="proj-grid" id="ap-proj-grid"></div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="admin-page" id="ap-results" style="display:none">
+          <div class="section-hdr">
+            <div class="section-title">نتائج التقييم</div>
+            <div style="display:flex;gap:8px">
+              <select class="fsel" id="res-dept-f" onchange="renderResults()"><option value="">كل الإدارات</option></select>
+              <select class="fsel" id="res-proj-f" onchange="renderResults()"><option value="">كل المشاريع</option></select>
+            </div>
+          </div>
+          <div class="card"><div class="card-body" id="results-content"></div></div>
+        </div>
+
+        <!-- REPORT -->
+        <div class="admin-page" id="ap-report" style="display:none">
+          <div class="section-hdr">
+            <div class="section-title">التقرير التحليلي</div>
+            <button class="btn btn-ghost btn-sm" onclick="window.print()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              طباعة
+            </button>
+          </div>
+          <div id="report-content"></div>
+        </div>
+
+        <!-- QUESTIONS -->
+        <div class="admin-page" id="ap-questions" style="display:none">
+          <div class="section-hdr">
+            <div>
+              <div class="section-title">إدارة الأسئلة</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px">عدّل أسئلة التقييم لكل تصنيف</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="resetAllQ()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                استعادة الافتراضي
+              </button>
+              <button class="btn btn-success btn-sm" onclick="saveAllQ()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                حفظ التغييرات
+              </button>
+            </div>
+          </div>
+          <div class="info-bar">
+            <span style="font-size:18px;flex-shrink:0">💡</span>
+            <div>كل تصنيف يحتوي على <strong>6 أسئلة</strong> ثابتة. يمكنك تعديل النص بحرية والحفظ. التغييرات تُطبَّق فوراً على جميع التقييمات الجديدة.</div>
+          </div>
+          <div id="q-editor"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SURVEY ═══════════════════════════════ -->
+<div class="view" id="v-survey-home">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">بدء التقييم</div>
+      <div class="topbar-sub">اختر المشروع لبدء تقييم صاحب المصلحة</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="show('v-landing')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      رجوع
+    </button>
+  </div>
+  <div class="page-wrap">
+    <input class="search-inp" style="width:100%;margin-bottom:14px" placeholder="🔍 ابحث عن مشروع..." id="sv-search" oninput="renderSurveyHome()">
+    <div id="sv-proj-list"></div>
+  </div>
+</div>
+
+<div class="view" id="v-survey-form">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="sv-proj-title">المشروع</div>
+      <div class="topbar-sub" id="sv-proj-dept"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="show('v-survey-home');renderSurveyHome()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      رجوع
+    </button>
+  </div>
+  <div class="survey-wrap">
+    <div class="sv-prog-wrap"><div class="sv-prog-fill" id="sv-prog" style="width:0%"></div></div>
+    <div class="tabs" id="sv-tabs"></div>
+    <div id="sv-form-content"></div>
+    <div class="sv-footer">
+      <span style="font-size:12px;color:var(--muted)" id="sv-footer-info"></span>
+      <button class="btn btn-primary" onclick="saveEval()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+        حفظ التقييم
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="v-done">
+  <div class="done-view">
+    <div class="done-card">
+      <div class="done-icon">✅</div>
+      <h2 style="font-size:22px;font-weight:800;color:var(--primary);margin-bottom:8px">تم الحفظ بنجاح!</h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.7">شكراً جزيلاً — تم تسجيل تقييمك وسيُرفع للإدارة للمراجعة والتحليل.</p>
+      <button class="btn btn-success btn-full" style="margin-bottom:10px" onclick="show('v-survey-home');renderSurveyHome()">تقييم مشروع آخر</button>
+      <button class="btn btn-ghost btn-full" onclick="show('v-landing')">الرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════ SCRIPT ══════════════════════════════ -->
+<script>
+// ═══════════════ DATA ═══════════════
+const DEPTS=['إدارة شؤون المستفيدين','إدارة الدعم المؤسسي','إدارة تمكين المستفيدين','إدارة التسويق والاتصال','إدارة المالية والاستدامة'];
+const DEPT_COLORS=['#1a3a5c','#6d28d9','#0891b2','#059669','#c2410c'];
+
+const PROJECTS=[
+  {id:1,name:'ترميم منازل الأسر 2026م معتمد',dept:'إدارة شؤون المستفيدين',stakeholders:[{name:'الأسر المستفيدة',type:'متوسط التأثير',desc:'المستفيدون المباشرون'},{name:'إدارة شؤون المستفيدين',type:'قوي التأثير',desc:'الإدارة المنفذة'},{name:'الإدارة التنفيذية',type:'قوي التأثير',desc:'الإدارة العليا للجمعية'},{name:'منصة إحسان',type:'قوي التأثير',desc:'المنصة الوطنية للعمل الخيري'},{name:'مؤسسة المقاولات',type:'قوي التأثير',desc:'الجهة المنفذة للترميم'},{name:'الإدارة المالية',type:'متوسط التأثير',desc:'إدارة الشؤون المالية'},{name:'الجهات الرقابية',type:'ضعيف التأثير',desc:'الجهات ذات العلاقة'}]},
+  {id:2,name:'ترميم المنازل 2026',dept:'إدارة شؤون المستفيدين',stakeholders:[{name:'الأسر المستفيدة',type:'متوسط التأثير',desc:'المستفيدون المباشرون'},{name:'إدارة شؤون المستفيدين',type:'قوي التأثير',desc:'الإدارة المنفذة'},{name:'مؤسسة المقاولات',type:'قوي التأثير',desc:'الجهة المنفذة'},{name:'الإدارة المالية',type:'متوسط التأثير',desc:'إدارة الشؤون المالية'},{name:'الجهات الرقابية',type:'ضعيف التأثير',desc:'الجهات ذات العلاقة'}]},
+  {id:3,name:'رحلة غيث 4',dept:'إدارة شؤون المستفيدين',stakeholders:[{name:'المستفيدون (الأيتام)',type:'قوي التأثير',desc:'المشاركون في الرحلة'},{name:'أسر المستفيدين',type:'متوسط التأثير',desc:'أولياء الأمور'},{name:'الإدارة التنفيذية',type:'متوسط التأثير',desc:'إدارة الجمعية'}]},
+  {id:4,name:'زكاة الفطر 2026',dept:'إدارة شؤون المستفيدين',stakeholders:[{name:'منصة إحسان',type:'قوي التأثير',desc:'المنصة الوطنية'},{name:'المتبرعون',type:'قوي التأثير',desc:'جهات وأفراد التبرع'},{name:'الموردون',type:'قوي التأثير',desc:'موردو المواد الغذائية'},{name:'المستفيدون',type:'قوي التأثير',desc:'أسر المستفيدين'},{name:'الإدارة المالية',type:'متوسط التأثير',desc:'إدارة الشؤون المالية'}]},
+  {id:5,name:'إرث',dept:'إدارة الدعم المؤسسي',stakeholders:[{name:'قيادات الصف الأول',type:'قوي التأثير',desc:'المدراء الحاليون'},{name:'مرشحو الصف الثاني',type:'قوي التأثير',desc:'الموظفون المستهدفون'},{name:'الإدارة العليا',type:'متوسط التأثير',desc:'الرئيس التنفيذي'},{name:'إدارة الموارد البشرية',type:'متوسط التأثير',desc:'فريق المشروع'}]},
+  {id:6,name:'تطوير العاملين',dept:'إدارة الدعم المؤسسي',stakeholders:[{name:'راعي المشروع',type:'قوي التأثير',desc:'الجهة الراعية'},{name:'المدربون',type:'متوسط التأثير',desc:'الكوادر التدريبية'},{name:'أعضاء فريق المشروع',type:'متوسط التأثير',desc:'فريق العمل'},{name:'الموظفون',type:'متوسط التأثير',desc:'المستفيدون من البرنامج'}]},
+  {id:7,name:'تنفيذ وتشغيل منظومة Key Smart ERP',dept:'إدارة الدعم المؤسسي',stakeholders:[{name:'المدير التنفيذي',type:'قوي التأثير',desc:'القيادة العليا'},{name:'الموظفون',type:'قوي التأثير',desc:'مستخدمو النظام'},{name:'المستفيدون',type:'متوسط التأثير',desc:'مستفيدو الجمعية'},{name:'المتبرعون والكفلاء',type:'متوسط التأثير',desc:'داعمو الجمعية'},{name:'د. أحمد السالمي',type:'قوي التأثير',desc:'استشاري تقني'},{name:'مركز الخدمات المتكاملة',type:'قوي التأثير',desc:'الشركة المنفذة'}]},
+  {id:8,name:'رتل',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'الأمهات',type:'قوي التأثير',desc:'أمهات الأيتام المشاركات'},{name:'الأيتام واليتيمات',type:'قوي التأثير',desc:'المستفيدون الرئيسيون'},{name:'فريق العمل',type:'قوي التأثير',desc:'المشرفون على البرنامج'},{name:'جمعية تحفيظ القرآن',type:'متوسط التأثير',desc:'شريك تعليمي'},{name:'المعلمات',type:'قوي التأثير',desc:'المعلمات المتعاقدات'},{name:'مؤسسة إتقان',type:'متوسط التأثير',desc:'شريك تعليمي'}]},
+  {id:9,name:'رفاق خير البقاع 9',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'المستفيدون المشاركون',type:'قوي التأثير',desc:'الأيتام المشاركون'},{name:'أسر المستفيدين',type:'متوسط التأثير',desc:'أولياء الأمور'},{name:'الإدارة التنفيذية',type:'متوسط التأثير',desc:'إدارة الجمعية'}]},
+  {id:10,name:'فاهم',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'الطلاب المستفيدون',type:'قوي التأثير',desc:'طلاب الأيتام'},{name:'أسر المستفيدين',type:'قوي التأثير',desc:'أولياء الأمور'},{name:'المدرسون والمعلمون',type:'متوسط التأثير',desc:'الكادر التعليمي'}]},
+  {id:11,name:'قادة رفاق',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'المشاركون الشباب',type:'قوي التأثير',desc:'الشباب المستفيدون'},{name:'أسر المشاركين',type:'متوسط التأثير',desc:'أولياء الأمور'},{name:'الإدارة التنفيذية',type:'متوسط التأثير',desc:'إدارة الجمعية'}]},
+  {id:12,name:'قادر',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'فريق العمل',type:'قوي التأثير',desc:'الفريق الميداني'},{name:'هدف',type:'قوي التأثير',desc:'شريك استراتيجي'},{name:'الداعمون',type:'قوي التأثير',desc:'المتبرعون'},{name:'سوق العمل',type:'قوي التأثير',desc:'جهات التوظيف'},{name:'معهد أثر',type:'قوي التأثير',desc:'شريك تدريبي'}]},
+  {id:13,name:'مسار',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'المستفيدات',type:'قوي التأثير',desc:'المستفيدون المباشرون'},{name:'الجهات الداعمة',type:'متوسط التأثير',desc:'شركاء حكوميون'},{name:'الإدارة التنفيذية',type:'قوي التأثير',desc:'إدارة الجمعية'}]},
+  {id:14,name:'مشكاة',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'المستفيدون',type:'قوي التأثير',desc:'الأيتام المشاركون'},{name:'فريق العمل',type:'قوي التأثير',desc:'المشرفون'},{name:'المتطوعون',type:'متوسط التأثير',desc:'المتطوعون المساندون'},{name:'مخيم تكية',type:'متوسط التأثير',desc:'شريك مقر'},{name:'فندق كروان بلازا',type:'قوي التأثير',desc:'شريك توفير مقر'},{name:'معرض السيرة النبوية الدولي',type:'متوسط التأثير',desc:'شريك ثقافي'},{name:'المرشد السياحي د. الطيب الشنقيطي',type:'قوي التأثير',desc:'خبير متطوع'}]},
+  {id:15,name:'مناسك',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'تنمية الموارد المالية',type:'قوي التأثير',desc:'إدارة التمويل'},{name:'الإدارة التنفيذية',type:'قوي التأثير',desc:'الإدارة العليا'},{name:'المالية والحسابات',type:'قوي التأثير',desc:'الإدارة المالية'},{name:'تمكين المستفيدين',type:'متوسط التأثير',desc:'الإدارة المنفذة'},{name:'حملة صالح الظفيري',type:'قوي التأثير',desc:'الحملة الداعمة'}]},
+  {id:16,name:'منتج',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'الشباب المستفيدون',type:'قوي التأثير',desc:'الأيتام في سن العمل'},{name:'أسر المستفيدين',type:'متوسط التأثير',desc:'أولياء الأمور'},{name:'جهات التوظيف',type:'قوي التأثير',desc:'الشركات المتعاونة'}]},
+  {id:17,name:'نوافذ',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'الأيتام المستفيدون',type:'قوي التأثير',desc:'المستفيدون الرئيسيون'},{name:'أسر المستفيدين',type:'متوسط التأثير',desc:'أولياء الأمور'},{name:'الشركاء المحتضنون',type:'قوي التأثير',desc:'جهات تستضيف البرنامج'}]},
+  {id:18,name:'نور القناديل',dept:'إدارة تمكين المستفيدين',stakeholders:[{name:'الأمهات المستفيدات',type:'قوي التأثير',desc:'أمهات الأيتام'},{name:'الشركاء الداعمون',type:'قوي التأثير',desc:'داعمو البرنامج'},{name:'الإدارة التنفيذية',type:'متوسط التأثير',desc:'إدارة الجمعية'}]},
+  {id:19,name:'إحتفاء',dept:'إدارة التسويق والاتصال',stakeholders:[{name:'الخريجون المكرَّمون',type:'قوي التأثير',desc:'خريجو برامج رفاق'},{name:'أسر الخريجين',type:'قوي التأثير',desc:'ذوو الخريجين'},{name:'الشركاء والرعاة',type:'قوي التأثير',desc:'الجهات الداعمة'},{name:'وسائل الإعلام',type:'متوسط التأثير',desc:'الإعلام المحلي'},{name:'الإدارة التنفيذية',type:'قوي التأثير',desc:'إدارة الجمعية'}]},
+  {id:20,name:'جائزة التميز والإبداع وخريجي رفاق',dept:'إدارة التسويق والاتصال',stakeholders:[{name:'المتسابقون والفائزون',type:'قوي التأثير',desc:'المشاركون في الجائزة'},{name:'الشركاء الداعمون',type:'قوي التأثير',desc:'جهات الدعم'},{name:'الإعلام والجمهور',type:'متوسط التأثير',desc:'المجتمع المحيط'},{name:'الإدارة التنفيذية',type:'قوي التأثير',desc:'إدارة الجمعية'}]},
+  {id:21,name:'مشروع معالجة وضع الأوقاف',dept:'إدارة المالية والاستدامة',stakeholders:[{name:'إدارة تعليم حائل',type:'قوي التأثير',desc:'جهة حكومية'},{name:'المكتب العقاري',type:'قوي التأثير',desc:'الشريك العقاري'},{name:'وزارة العدل',type:'قوي التأثير',desc:'جهة تشريعية'},{name:'الشيخ حمود الرضيمان',type:'قوي التأثير',desc:'طرف ذو علاقة'},{name:'الشيخ سليمان الماجد',type:'قوي التأثير',desc:'مرجع شرعي'},{name:'لجنة الاستثمار',type:'قوي التأثير',desc:'لجنة داخلية'}]},
+];
+
+const DEFAULT_Q={
+  'قوي التأثير':['هل أسهم المشروع في تحقيق توقعاتك واحتياجاتك الجوهرية؟','ما مدى رضاك عن مستوى الشفافية والإفصاح في التعامل معك؟','هل تم الوفاء بالالتزامات والتعهدات المتفق عليها معك؟','ما مدى رضاك عن سرعة الاستجابة لمتطلباتك واستفساراتك؟','هل أثّر هذا المشروع إيجاباً على علاقتك مع الجمعية؟','ما مدى رضاك العام عن تجربتك مع هذا المشروع؟'],
+  'متوسط التأثير':['هل حقق المشروع الأهداف المتوقعة في نطاق تأثيرك؟','ما مدى رضاك عن مستوى التنسيق بينك وبين فريق المشروع؟','هل تم إشراكك في القرارات التي تخصك خلال تنفيذ المشروع؟','ما مدى رضاك عن الخدمات والدعم المقدمَين لك في المشروع؟','هل أثر هذا المشروع بشكل ملموس على دورك أو نشاطك؟','ما مدى رضاك العام عن هذا المشروع وأثره عليك؟'],
+  'ضعيف التأثير':['هل كانت التوقعات من المشروع واضحة لك منذ البداية؟','ما مدى رضاك عن التواصل الذي تلقيته بشأن هذا المشروع؟','هل أثّر هذا المشروع على عملك أو نشاطك بأي شكل؟','ما مدى رضاك عن الأثر الإجمالي للمشروع على مجالك؟','هل تود الاستمرار في التعاون مع الجمعية في مشاريع مستقبلية؟','ما مدى رضاك العام عن هذا المشروع؟'],
+};
+
+const ADMIN_PW='rafaq2026';
+
+// ═══════════════ STATE ═══════════════
+let curProj=null,curS=null,curAns={};
+let adminLoggedIn=false;
+
+// ═══════════════ STORAGE ═══════════════
+function getEvals(){try{return JSON.parse(localStorage.getItem('rpl_ev_v3')||'{}');}catch{return {};}}
+function saveEvals(d){localStorage.setItem('rpl_ev_v3',JSON.stringify(d));}
+function getQ(type){try{const c=JSON.parse(localStorage.getItem('rpl_q_v3')||'null');return(c&&c[type])||DEFAULT_Q[type]||DEFAULT_Q['قوي التأثير'];}catch{return DEFAULT_Q[type]||DEFAULT_Q['قوي التأثير'];}}
+
+// ═══════════════ HELPERS ═══════════════
+function getDI(dept){return DEPTS.indexOf(dept);}
+function getStatus(p){
+  const ev=getEvals();
+  const done=p.stakeholders.filter(s=>{const e=ev[p.id+'_'+s.name];return e&&Object.keys(e).filter(k=>k!=='notes').length>=6;});
+  if(!done.length)return'pending';if(done.length===p.stakeholders.length)return'done';return'partial';
+}
+function getScore(p){
+  const ev=getEvals();let t=0,c=0;
+  p.stakeholders.forEach(s=>{const e=ev[p.id+'_'+s.name];if(e){for(let i=0;i<6;i++){const v=e['q'+i];if(v){t+=parseInt(v);c++;}}}});
+  return c>0?(t/c).toFixed(1):null;
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ═══════════════ NAVIGATION ═══════════════
+function show(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goSurvey(){show('v-survey-home');renderSurveyHome();}
+
+function goAdmin(){show('v-login');setTimeout(()=>{const i=document.getElementById('pw-inp');if(i)i.focus();},100);}
+
+function checkPW(){
+  const pw=document.getElementById('pw-inp').value;
+  if(pw===ADMIN_PW){
+    document.getElementById('pw-err').style.display='none';
+    document.getElementById('pw-inp').value='';
+    adminLoggedIn=true;
+    show('v-admin');
+    renderDashboard();
+  } else {
+    document.getElementById('pw-err').style.display='block';
+  }
+}
+
+function adminLogout(){adminLoggedIn=false;show('v-landing');}
+
+function adminPage(name,btn){
+  document.querySelectorAll('.admin-page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ap-'+name).style.display='block';
+  btn.classList.add('active');
+  const titles={dashboard:'لوحة التحكم',projects:'المشاريع',results:'نتائج التقييم',report:'التقرير التحليلي',questions:'إدارة الأسئلة'};
+  document.getElementById('admin-page-title').textContent=titles[name]||'';
+  if(name==='dashboard')renderDashboard();
+  if(name==='projects')renderAdminProjects();
+  if(name==='results')renderResults();
+  if(name==='report')renderReport();
+  if(name==='questions')renderQEditor();
+}
+
+// ═══════════════ DASHBOARD ═══════════════
+function renderDashboard(){
+  const ev=getEvals();
+  const total=PROJECTS.length;
+  const done=PROJECTS.filter(p=>getStatus(p)==='done').length;
+  const partial=PROJECTS.filter(p=>getStatus(p)==='partial').length;
+  let evDone=0,allT=0,allC=0;
+  PROJECTS.forEach(p=>{
+    p.stakeholders.forEach(s=>{
+      const e=ev[p.id+'_'+s.name];
+      if(e&&Object.keys(e).filter(k=>k!=='notes').length>=6)evDone++;
+      if(e){for(let i=0;i<6;i++){const v=e['q'+i];if(v){allT+=parseInt(v);allC++;}}}
+    });
+  });
+  const avg=allC>0?(allT/allC).toFixed(1):'—';
+  const pct=Math.round(((done+partial*.5)/total)*100);
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-done').textContent=evDone;
+  document.getElementById('st-avg').textContent=avg;
+  document.getElementById('st-pct').textContent=pct+'%';
+
+  // dept chart
+  const short={'إدارة شؤون المستفيدين':'شؤون المستفيدين','إدارة الدعم المؤسسي':'الدعم المؤسسي','إدارة تمكين المستفيدين':'تمكين المستفيدين','إدارة التسويق والاتصال':'التسويق والاتصال','إدارة المالية والاستدامة':'المالية والاستدامة'};
+  const deptC={};DEPTS.forEach(d=>deptC[d]=0);PROJECTS.forEach(p=>deptC[p.dept]++);
+  const maxC=Math.max(...Object.values(deptC));
+  document.getElementById('d-dept-chart').innerHTML=DEPTS.map((d,i)=>`
+    <div class="bar-item">
+      <span class="bar-lbl">${short[d]}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${deptC[d]/maxC*100}%;background:${DEPT_COLORS[i]}"></div></div>
+      <span class="bar-val">${deptC[d]}</span>
+    </div>`).join('');
+
+  const deptS={};
+  DEPTS.forEach(d=>{
+    let t=0,c=0;
+    PROJECTS.filter(p=>p.dept===d).forEach(p=>{const sc=getScore(p);if(sc){t+=parseFloat(sc);c++;}});
+    deptS[d]=c>0?(t/c).toFixed(1):null;
+  });
+  document.getElementById('d-score-chart').innerHTML=DEPTS.map((d,i)=>`
+    <div class="bar-item">
+      <span class="bar-lbl">${short[d]}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${deptS[d]?deptS[d]/5*100:0}%;background:${DEPT_COLORS[i]}"></div></div>
+      <span class="bar-val">${deptS[d]?deptS[d]+'/5':'—'}</span>
+    </div>`).join('');
+
+  const scored=PROJECTS.filter(p=>getScore(p)).map(p=>({...p,score:parseFloat(getScore(p))})).sort((a,b)=>b.score-a.score).slice(0,5);
+  document.getElementById('d-top').innerHTML=scored.length?scored.map((p,i)=>{
+    const cls=p.score>=4?'sc-h':p.score>=3?'sc-m':'sc-l';
+    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="width:22px;height:22px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted)">${i+1}</span>
+        <div><div style="font-weight:700;font-size:13px">${p.name}</div><div style="font-size:11px;color:var(--muted)">${p.dept.replace('إدارة ','')}</div></div>
+      </div>
+      <span class="sc ${cls}">${p.score.toFixed(1)}/5</span>
+    </div>`;
+  }).join(''):'<p style="text-align:center;color:var(--muted);font-size:13px">لا توجد تقييمات بعد</p>';
+
+  document.getElementById('share-link-box').textContent=window.location.href;
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href).then(()=>toast('✅ تم نسخ الرابط')).catch(()=>toast('الرابط: '+window.location.href));
+}
+
+// ═══════════════ ADMIN PROJECTS ═══════════════
+function renderAdminProjects(){
+  const deptSel=document.getElementById('ap-dept-f');
+  if(deptSel.options.length<=1){DEPTS.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d.replace('إدارة ','');deptSel.appendChild(o);});}
+  const s=(document.getElementById('ap-search').value||'').toLowerCase();
+  const df=document.getElementById('ap-dept-f').value;
+  const sf=document.getElementById('ap-status-f').value;
+  const list=PROJECTS.filter(p=>{
+    if(s&&!p.name.toLowerCase().includes(s))return false;
+    if(df&&p.dept!==df)return false;
+    if(sf&&getStatus(p)!==sf)return false;
+    return true;
+  });
+  document.getElementById('ap-proj-count').textContent=list.length+' مشروع';
+  document.getElementById('ap-proj-grid').innerHTML=list.map(p=>{
+    const di=getDI(p.dept);
+    const st=getStatus(p);const sc=getScore(p);
+    const ev=getEvals();
+    const done=p.stakeholders.filter(s=>{const e=ev[p.id+'_'+s.name];return e&&Object.keys(e).filter(k=>k!=='notes').length>=6;}).length;
+    const pct=Math.round(done/p.stakeholders.length*100);
+    const chipCls=st==='done'?'chip-done':st==='partial'?'chip-part':'chip-pend';
+    const chipLbl=st==='done'?'✓ مكتمل':st==='partial'?'◑ جزئي':'○ لم يبدأ';
+    const scPill=sc?`<span class="sc ${parseFloat(sc)>=4?'sc-h':parseFloat(sc)>=3?'sc-m':'sc-l'}">${sc}/5</span>`:'' ;
+    return`<div class="proj-card dc${di}">
+      <span class="dept-badge db${di}">${p.dept.replace('إدارة ','')}</span>
+      <h3>${p.name}</h3>
+      <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%;background:var(--dc)"></div></div>
+      <div class="proj-footer">
+        <span style="font-size:11px;color:var(--muted)">${done}/${p.stakeholders.length} صاحب مصلحة</span>
+        <div style="display:flex;gap:5px;align-items:center">${scPill}<span class="chip ${chipCls}">${chipLbl}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════ RESULTS ═══════════════
+function renderResults(){
+  const resDept=document.getElementById('res-dept-f');
+  if(resDept.options.length<=1){DEPTS.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d.replace('إدارة ','');resDept.appendChild(o);});}
+  const resProj=document.getElementById('res-proj-f');
+  if(resProj.options.length<=1){PROJECTS.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;resProj.appendChild(o);});}
+  const df=resDept.value;const pf=resProj.value;
+  const ev=getEvals();const rows=[];
+  PROJECTS.forEach(p=>{
+    if(df&&p.dept!==df)return;if(pf&&p.id!=pf)return;
+    p.stakeholders.forEach(s=>{
+      const e=ev[p.id+'_'+s.name];
+      if(e&&Object.keys(e).filter(k=>k!=='notes').length>0){
+        let t=0,c=0;for(let i=0;i<6;i++){const v=e['q'+i];if(v){t+=parseInt(v);c++;}}
+        rows.push({proj:p.name,dept:p.dept,s:s.name,type:s.type,avg:c>0?(t/c).toFixed(1):'-',c,notes:e.notes||''});
+      }
+    });
+  });
+  if(!rows.length){document.getElementById('results-content').innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><h3>لا توجد نتائج بعد</h3><p>ابدأ بتقييم المشاريع</p></div>';return;}
+  document.getElementById('results-content').innerHTML=`<table class="rtable">
+    <thead><tr><th>#</th><th>المشروع</th><th>الإدارة</th><th>صاحب المصلحة</th><th>التصنيف</th><th>الأسئلة</th><th>متوسط الرضا</th><th>ملاحظات</th></tr></thead>
+    <tbody>${rows.map((r,i)=>{
+      const cls=parseFloat(r.avg)>=4?'sc-h':parseFloat(r.avg)>=3?'sc-m':'sc-l';
+      const tbg=r.type==='قوي التأثير'?'#fee2e2,#b91c1c':r.type==='متوسط التأثير'?'#fef9c3,#92400e':'#d1fae5,#14532d';
+      const [bg,tc]=tbg.split(',');
+      return`<tr>
+        <td style="color:var(--light);font-size:12px">${i+1}</td>
+        <td style="font-weight:700;font-size:13px">${r.proj}</td>
+        <td style="font-size:12px;color:var(--muted)">${r.dept.replace('إدارة ','')}</td>
+        <td style="font-weight:600">${r.s}</td>
+        <td><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${bg};color:${tc};font-weight:600">${r.type}</span></td>
+        <td style="text-align:center;font-size:12px;color:var(--muted)">${r.c}/6</td>
+        <td><span class="sc ${cls}">${r.avg}/5</span></td>
+        <td style="font-size:12px;color:var(--muted);max-width:140px;word-break:break-word">${r.notes||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+// ═══════════════ REPORT ═══════════════
+function renderReport(){
+  const pd=PROJECTS.map(p=>{
+    let t=0,c=0;const sr=[];
+    p.stakeholders.forEach(s=>{const e=getEvals()[p.id+'_'+s.name];if(e){let st=0,sc2=0;for(let i=0;i<6;i++){const v=e['q'+i];if(v){st+=parseInt(v);sc2++;t+=parseInt(v);c++;}}if(sc2>0)sr.push({name:s.name,avg:(st/sc2).toFixed(1)});}});
+    return{...p,avg:c>0?(t/c).toFixed(1):null,sr,ec:sr.length};
+  }).filter(p=>p.avg!==null);
+  if(!pd.length){document.getElementById('report-content').innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><h3>لا توجد بيانات</h3><p>أكمل تقييم مشروع واحد على الأقل</p></div>';return;}
+  const overall=(pd.reduce((s,p)=>s+parseFloat(p.avg),0)/pd.length).toFixed(1);
+  const best=[...pd].sort((a,b)=>b.avg-a.avg)[0];
+  const worst=[...pd].sort((a,b)=>a.avg-b.avg)[0];
+  const today=new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('report-content').innerHTML=`
+    <div class="report-hero">
+      <div><h2 style="font-size:20px;font-weight:800;margin-bottom:5px">تقرير تحليل رضا أصحاب المصلحة</h2>
+        <p style="opacity:.75;font-size:13px">النصف الأول 2026 | جمعية رفاق الخيرية | تاريخ التقرير: ${today}</p></div>
+      <div style="text-align:center"><div style="font-size:48px;font-weight:900;line-height:1">${overall}</div>
+        <div style="font-size:13px;opacity:.75">متوسط الرضا العام / 5</div></div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:20px">
+      <div class="stat" style="--c:var(--primary)"><div class="stat-n">${pd.length}</div><div class="stat-l">مشاريع مقيّمة</div></div>
+      <div class="stat" style="--c:var(--success)"><div class="stat-n">${pd.reduce((s,p)=>s+p.ec,0)}</div><div class="stat-l">تقييمات أصحاب المصلحة</div></div>
+      <div class="stat" style="--c:var(--accent)"><div class="stat-n" style="font-size:20px">${best.avg}/5</div><div class="stat-l">أعلى رضاء: ${best.name}</div></div>
+      <div class="stat" style="--c:var(--danger)"><div class="stat-n" style="font-size:20px">${worst.avg}/5</div><div class="stat-l">يحتاج تحسين: ${worst.name}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><span class="card-title">أداء المشاريع المقيّمة</span></div>
+      <div style="padding:0"><table class="rtable">
+        <thead><tr><th>المشروع</th><th>الإدارة</th><th style="text-align:center">التقييمات</th><th style="text-align:center">متوسط الرضا</th><th style="text-align:center">التقييم</th></tr></thead>
+        <tbody>${[...pd].sort((a,b)=>b.avg-a.avg).map(p=>{
+          const sc=parseFloat(p.avg);const lbl=sc>=4.5?'ممتاز':sc>=4?'جيد جداً':sc>=3?'متوسط':'يحتاج تحسين';const cls=sc>=4?'sc-h':sc>=3?'sc-m':'sc-l';
+          return`<tr><td style="font-weight:700">${p.name}</td><td style="font-size:12px;color:var(--muted)">${p.dept.replace('إدارة ','')}</td><td style="text-align:center;font-size:12px">${p.ec}</td><td style="text-align:center;font-weight:800">${p.avg}</td><td style="text-align:center"><span class="sc ${cls}">${lbl}</span></td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">الملاحظات والتوصيات</span></div>
+      <div class="card-body"><div style="background:var(--bg);border-radius:var(--rs);padding:16px;font-size:14px;line-height:2">
+        <p>• <strong>أعلى المشاريع رضاءً:</strong> ${best.name} بمتوسط ${best.avg} / 5</p>
+        ${worst.name!==best.name?`<p>• <strong>المشاريع التي تحتاج تحسيناً:</strong> ${worst.name} بمتوسط ${worst.avg} / 5</p>`:''}
+        <p>• <strong>المتوسط العام:</strong> ${overall} من 5 — ${parseFloat(overall)>=4?'مستوى رضا عالٍ يعكس جودة التنفيذ':parseFloat(overall)>=3?'مستوى متوسط يستدعي مراجعة بعض الجوانب':'مستوى منخفض يستدعي اهتماماً عاجلاً'}</p>
+        <p>• يُوصى برفع هذا التقرير للإدارة العليا بالتنسيق مع قسم الجودة والتميز المؤسسي.</p>
+      </div></div>
+    </div>`;
+}
+
+// ═══════════════ Q EDITOR ═══════════════
+function renderQEditor(){
+  const types=['قوي التأثير','متوسط التأثير','ضعيف التأثير'];
+  const saved=JSON.parse(localStorage.getItem('rpl_q_v3')||'{}');
+  document.getElementById('q-editor').innerHTML=types.map(tp=>{
+    const qs=(saved[tp]||DEFAULT_Q[tp]);
+    const clr=tp==='قوي التأثير'?'#fee2e2,#b91c1c':tp==='متوسط التأثير'?'#fef9c3,#92400e':'#d1fae5,#14532d';
+    const [bg,tc]=clr.split(',');
+    return`<div class="card" style="margin-bottom:14px">
+      <div class="card-header" style="background:${bg}">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="background:${tc};color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px">${tp}</span>
+          <span class="card-title">أسئلة التقييم</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted)">6 أسئلة</span>
+      </div>
+      <div class="card-body">
+        ${qs.map((q,i)=>`<div class="q-editor-row">
+          <div class="qn">${i+1}</div>
+          <textarea id="qe_${tp.replace(/\s/g,'_')}_${i}" rows="2">${q}</textarea>
+          <button class="rst-btn" onclick="resetOneQ('${tp}',${i})" title="استعادة الافتراضي">↺</button>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveAllQ(){
+  const types=['قوي التأثير','متوسط التأثير','ضعيف التأثير'];const out={};
+  for(const tp of types){out[tp]=[];for(let i=0;i<6;i++){const el=document.getElementById(`qe_${tp.replace(/\s/g,'_')}_${i}`);const v=el?el.value.trim():'';if(!v){toast('⚠ يرجى ملء جميع الأسئلة');return;}out[tp].push(v);}}
+  localStorage.setItem('rpl_q_v3',JSON.stringify(out));toast('✅ تم حفظ الأسئلة');
+}
+function resetOneQ(tp,i){const el=document.getElementById(`qe_${tp.replace(/\s/g,'_')}_${i}`);if(el){el.value=DEFAULT_Q[tp][i];el.style.borderColor='var(--success)';setTimeout(()=>el.style.borderColor='',1000);}}
+function resetAllQ(){if(!confirm('استعادة جميع الأسئلة الافتراضية؟'))return;localStorage.removeItem('rpl_q_v3');renderQEditor();toast('✅ تمت الاستعادة');}
+
+// ═══════════════ SURVEY HOME ═══════════════
+function renderSurveyHome(){
+  const s=(document.getElementById('sv-search').value||'').toLowerCase();
+  const ev=getEvals();
+  const list=PROJECTS.filter(p=>!s||p.name.toLowerCase().includes(s)||p.dept.includes(s));
+  document.getElementById('sv-proj-list').innerHTML=list.map(p=>{
+    const done=p.stakeholders.filter(s=>{const e=ev[p.id+'_'+s.name];return e&&Object.keys(e).filter(k=>k!=='notes').length>=6;}).length;
+    const pct=Math.round(done/p.stakeholders.length*100);
+    const di=getDI(p.dept);
+    return`<div class="card" style="cursor:pointer;margin-bottom:10px;position:relative;overflow:hidden" onclick="openSurvey(${p.id})">
+      <div style="position:absolute;top:0;right:0;width:4px;height:100%;background:${DEPT_COLORS[di]}"></div>
+      <div style="padding-right:8px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px">${p.name}</div>
+          <div style="font-size:11px;color:var(--muted)">${p.dept.replace('إدارة ','')}</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted);white-space:nowrap;margin-right:8px">${done}/${p.stakeholders.length}</span>
+      </div>
+      <div style="margin-top:10px;height:3px;background:var(--border);border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${DEPT_COLORS[di]};border-radius:2px;transition:width .3s"></div>
+      </div>
+    </div>`;
+  }).join('')||'<p style="text-align:center;color:var(--muted);padding:30px">لا توجد مشاريع مطابقة</p>';
+}
+
+// ═══════════════ SURVEY FORM ═══════════════
+function openSurvey(id){
+  curProj=PROJECTS.find(p=>p.id===id);
+  if(!curProj)return;
+  document.getElementById('sv-proj-title').textContent=curProj.name;
+  document.getElementById('sv-proj-dept').textContent=curProj.dept;
+  const first=curProj.stakeholders.find(s=>{const e=getEvals()[curProj.id+'_'+s.name];return!e||Object.keys(e).filter(k=>k!=='notes').length<6;})||curProj.stakeholders[0];
+  selectS(first.name);
+  show('v-survey-form');
+}
+
+function renderTabs(){
+  const ev=getEvals();
+  document.getElementById('sv-tabs').innerHTML=curProj.stakeholders.map(s=>{
+    const e=ev[curProj.id+'_'+s.name];
+    const done=e&&Object.keys(e).filter(k=>k!=='notes').length>=6;
+    return`<button class="tab ${done?'done':''} ${s.name===curS?'active':''}" onclick="selectS('${s.name.replace(/'/g,"\\'")}')">${s.name}${done?' ✓':''}</button>`;
+  }).join('');
+}
+
+function selectS(name){
+  curS=name;
+  const e=getEvals()[curProj.id+'_'+name]||{};
+  curAns={...e};
+  renderTabs();renderForm();
+}
+
+function renderForm(){
+  const s=curProj.stakeholders.find(x=>x.name===curS);
+  const qs=getQ(s.type);
+  let html=`<div class="s-meta">
+    <div><div class="meta-l">صاحب المصلحة</div><div class="meta-v">${s.name}</div></div>
+    <div><div class="meta-l">مستوى التأثير</div><div class="meta-v">${s.type}</div></div>
+    <div style="grid-column:1/-1"><div class="meta-l">الوصف</div><div class="meta-v">${s.desc}</div></div>
+  </div>`;
+  const labs={1:'غير راضٍ تماماً',2:'غير راضٍ',3:'محايد',4:'راضٍ',5:'راضٍ جداً'};
+  qs.forEach((q,i)=>{
+    const sel=curAns['q'+i];
+    const opts=[1,2,3,4,5].map(v=>`<button class="rb ${sel==v?'s'+v:''}" onclick="setA(${i},${v})">${v}<br><small style="font-size:10px;font-weight:400">${labs[v]}</small></button>`).join('');
+    html+=`<div class="q-block">
+      <div class="q-label"><span class="q-n">${i+1}</span>${q}</div>
+      <div class="rating-row">${opts}</div>
+      <div class="scale-ends"><span>غير راضٍ تماماً ←</span><span>→ راضٍ جداً</span></div>
+    </div>`;
+  });
+  html+=`<div style="margin-top:4px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:7px">ملاحظات وتوصيات (اختياري)</div>
+    <textarea class="notes-area" id="sv-notes" placeholder="أي ملاحظات أو مقترحات إضافية...">${curAns.notes||''}</textarea>
+  </div>`;
+  document.getElementById('sv-form-content').innerHTML=html;
+  updateProg();
+}
+
+function setA(qi,val){
+  curAns['q'+qi]=val;
+  document.querySelectorAll('#sv-form-content .q-block')[qi].querySelectorAll('.rb').forEach((b,j)=>{b.className='rb'+(j+1===val?' s'+val:'');});
+  updateProg();
+}
+
+function updateProg(){
+  const ans=[0,1,2,3,4,5].filter(i=>curAns['q'+i]).length;
+  document.getElementById('sv-prog').style.width=(ans/6*100)+'%';
+  document.getElementById('sv-footer-info').textContent=`${ans} / 6 أسئلة تم الإجابة عليها`;
+}
+
+function saveEval(){
+  const ans=[0,1,2,3,4,5].filter(i=>curAns['q'+i]).length;
+  if(ans<6){toast('⚠ يرجى الإجابة على جميع الأسئلة الستة');return;}
+  const n=document.getElementById('sv-notes');if(n)curAns.notes=n.value;
+  const ev=getEvals();ev[curProj.id+'_'+curS]={...curAns};saveEvals(ev);
+  toast('✅ تم حفظ تقييم '+curS);
+  const next=curProj.stakeholders.find(s=>{const e=ev[curProj.id+'_'+s.name];return!e||Object.keys(e).filter(k=>k!=='notes').length<6;});
+  if(next){selectS(next.name);}else{show('v-done');}
+}
+
+// ═══════════════ EXPORT ═══════════════
+function exportCSV(){
+  const ev=getEvals();
+  const rows=[['المشروع','الإدارة','صاحب المصلحة','التصنيف','س1','س2','س3','س4','س5','س6','المتوسط','ملاحظات']];
+  PROJECTS.forEach(p=>{p.stakeholders.forEach(s=>{const e=ev[p.id+'_'+s.name];if(e){let t=0,c=0;const vs=[];for(let i=0;i<6;i++){const v=e['q'+i]||'';vs.push(v);if(v){t+=parseInt(v);c++;}}const avg=c>0?(t/c).toFixed(1):'';rows.push([p.name,p.dept,s.name,s.type,...vs,avg,e.notes||'']);}});});
+  const csv='\uFEFF'+rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='تقييم_رضا_اصحاب_المصلحة.csv';a.click();
+  toast('📊 تم التصدير');
+}
+
+// ═══════════════ INIT ═══════════════
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('v-login').classList.contains('active'))checkPW();});
+</script>
+</body>
+</html>
